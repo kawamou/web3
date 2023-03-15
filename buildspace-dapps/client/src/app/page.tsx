@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { BaseProvider } from "@metamask/providers";
-import styles from "./page.module.css";
 import { Maybe } from "@metamask/providers/dist/utils";
+import { ethers } from "ethers";
+import abi from "../utils/WavePortal.json";
 
 // https://zenn.dev/thanai/scraps/4c94c04bdc8373
 declare global {
@@ -51,6 +52,9 @@ const findMetaMaskAccount = async () => {
 const Home = () => {
   const [currentAccount, setCurrentAccount] = useState("");
 
+  const contractAddress = "0xE19d7aFb59535de2FC9620afEe2db9ADB24E6684";
+  const contractABI = abi.abi;
+
   const connectWallet = async () => {
     try {
       const ethereum = getEthereumObject();
@@ -77,6 +81,42 @@ const Home = () => {
     }
   };
 
+  // WalletをGoeriに切り替えておく必要がある
+  const wave = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        // https://hardhat.org/hardhat-runner/plugins/nomiclabs-hardhat-ethers
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+
+        console.log("aaa: ", wavePortalContract);
+
+        let count = await wavePortalContract.getTotalWaves();
+        console.log("retrieve total wave count...", count.toNumber());
+
+        const waveTxn = await wavePortalContract.wave();
+        console.log("Mining...", waveTxn.hash);
+
+        await waveTxn.wait();
+        console.log("Mined -- ", waveTxn.hash);
+
+        count = await wavePortalContract.getTotalWaves();
+        console.log("retrieve total wave count...", count.toNumber());
+      } else {
+        console.log("ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     findMetaMaskAccount().then((account) => {
       if (account !== null) setCurrentAccount(account);
@@ -92,7 +132,7 @@ const Home = () => {
         right? Connect your Ethereum wallet and wave at me!`}
       </div>
 
-      <button onClick={() => {}}>Wave at Me</button>
+      <button onClick={wave}>Wave at Me</button>
 
       <button onClick={connectWallet}>Connect Wallet</button>
     </div>
