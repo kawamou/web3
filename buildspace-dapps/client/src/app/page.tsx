@@ -5,6 +5,7 @@ import { BaseProvider } from "@metamask/providers";
 import { Maybe } from "@metamask/providers/dist/utils";
 import { ethers } from "ethers";
 import abi from "../utils/WavePortal.json";
+import { WavePortal } from "../../../typechain-types/WavePortal";
 
 // https://zenn.dev/thanai/scraps/4c94c04bdc8373
 declare global {
@@ -52,8 +53,53 @@ const findMetaMaskAccount = async () => {
 const Home = () => {
   const [currentAccount, setCurrentAccount] = useState("");
 
-  const contractAddress = "0xE19d7aFb59535de2FC9620afEe2db9ADB24E6684";
+  const [allWaves, setAllWaves] = useState<
+    {
+      waver: String;
+      timestamp: ethers.BigNumber;
+      message: String;
+    }[]
+  >([]);
+
+  const contractAddress = "0x5AFa88aFc28B587736986a6D6C2Ed375cD619f89";
   const contractABI = abi.abi;
+
+  const getAllWaves = async () => {
+    try {
+      const { ethereum } = window;
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        ) as WavePortal;
+
+        const waves = await wavePortalContract.getAllWaves();
+
+        let wavesCleaned: {
+          waver: String;
+          timestamp: ethers.BigNumber;
+          message: String;
+        }[] = [];
+
+        waves.forEach((wave) => {
+          wavesCleaned.push({
+            waver: wave.waver,
+            timestamp: wave.timestamp,
+            message: wave.message,
+          });
+        });
+
+        setAllWaves(wavesCleaned);
+      } else {
+        console.log("ethereum object doesn't exist!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const connectWallet = async () => {
     try {
@@ -94,14 +140,14 @@ const Home = () => {
           contractAddress,
           contractABI,
           signer
-        );
+        ) as WavePortal;
 
         console.log("aaa: ", wavePortalContract);
 
         let count = await wavePortalContract.getTotalWaves();
         console.log("retrieve total wave count...", count.toNumber());
 
-        const waveTxn = await wavePortalContract.wave();
+        const waveTxn = await wavePortalContract.wave("this is message");
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
@@ -119,9 +165,13 @@ const Home = () => {
 
   useEffect(() => {
     findMetaMaskAccount().then((account) => {
-      if (account !== null) setCurrentAccount(account);
+      if (account !== null) {
+        setCurrentAccount(account);
+        getAllWaves();
+      }
     });
   }, []);
+
   return (
     <div className="">
       <div>
@@ -134,7 +184,26 @@ const Home = () => {
 
       <button onClick={wave}>Wave at Me</button>
 
-      <button onClick={connectWallet}>Connect Wallet</button>
+      {!currentAccount && (
+        <button onClick={connectWallet}>Connect Wallet</button>
+      )}
+
+      {allWaves.map((wave, index) => {
+        return (
+          <div
+            key={index}
+            style={{
+              backgroundColor: "OldLace",
+              marginTop: "16px",
+              padding: "8px",
+            }}
+          >
+            <div>address: {wave.waver}</div>
+            <div>time: {wave.timestamp.toNumber()}</div>
+            <div>message: {wave.message}</div>
+          </div>
+        );
+      })}
     </div>
   );
 };

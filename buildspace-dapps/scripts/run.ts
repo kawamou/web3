@@ -1,10 +1,6 @@
 import * as hre from "hardhat";
 
 const main = async () => {
-  // コントラクトをデプロイする人のアドレス
-  // テスト的にHardhat Networkに存在するアカウントリストから抽出
-  // scripts配下に書いてるのはあくまでテストなので
-  const [owner, randomPerson] = await hre.ethers.getSigners();
   // コントラクト操作のために必要なファイルが生成される？
   const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
   // 実際にデプロイを実施
@@ -16,21 +12,25 @@ const main = async () => {
   // Yo yo, I am a contract and I am smart
   // Contract deployed to: 0x5FbDB2315678afecb367f032d93F642f64180aa3
   console.log("Contract deployed to:", waveContract.address);
-  console.log("Contract deployed to:", owner.address);
 
+  let waveCount;
   // 一度デプロイするとTypeChain？が走り型定義ファイルが生まれる
   // これによりwaveContractにgetTotalWaves等のメソッドが生える
-  await waveContract.getTotalWaves();
+  waveCount = await waveContract.getTotalWaves();
+  console.log(waveCount.toNumber());
 
-  const waveTxn = await waveContract.wave();
+  let waveTxn = await waveContract.wave("a message!");
   await waveTxn.wait();
 
-  await waveContract.getTotalWaves();
+  // コントラクトをデプロイする人のアドレス
+  // テスト的にHardhat Networkに存在するアカウントリストから抽出
+  // scripts配下に書いてるのはあくまでテストなので
+  const [_, randomPerson] = await hre.ethers.getSigners();
+  waveTxn = await waveContract.connect(randomPerson).wave("another message!");
+  await waveTxn.wait();
 
-  const secondWaveTxn = await waveContract.connect(randomPerson).wave();
-  await secondWaveTxn.wait();
-
-  await waveContract.getTotalWaves();
+  let allWaves = await waveContract.getAllWaves();
+  console.log(allWaves);
 };
 
 const runMain = async () => {
