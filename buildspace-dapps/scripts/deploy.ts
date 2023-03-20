@@ -11,14 +11,10 @@ import * as hre from "hardhat";
 // waveportal address: 0xE19d7aFb59535de2FC9620afEe2db9ADB24E6684
 
 const main = async () => {
-  const [deployer] = await hre.ethers.getSigners();
-  const accountBalance = await deployer.getBalance();
-
-  console.log("deoloying contracts with account:", deployer.address);
-  console.log("account balance: %d", accountBalance);
-
   const waveContractFactory = await hre.ethers.getContractFactory("WavePortal");
-  const waveContract = await waveContractFactory.deploy();
+  const waveContract = await waveContractFactory.deploy({
+    value: hre.ethers.utils.parseEther("0.1"),
+  });
   await waveContract.deployed();
 
   console.log("waveportal address: %s", waveContract.address);
