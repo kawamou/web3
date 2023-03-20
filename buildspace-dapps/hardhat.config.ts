@@ -15,7 +15,7 @@ task("accounts", "prints the list of accounts", async (taskArgs, hre) => {
 });
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.18",
+  solidity: "0.8.0",
   networks: {
     goerli: {
       url: process.env.QUICKNODE_API_URL,

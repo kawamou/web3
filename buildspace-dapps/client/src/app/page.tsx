@@ -6,6 +6,7 @@ import { Maybe } from "@metamask/providers/dist/utils";
 import { ethers } from "ethers";
 import abi from "../utils/WavePortal.json";
 import { WavePortal } from "../../../typechain-types/WavePortal";
+import { on } from "events";
 
 // https://zenn.dev/thanai/scraps/4c94c04bdc8373
 declare global {
@@ -78,18 +79,16 @@ const Home = () => {
 
         const waves = await wavePortalContract.getAllWaves();
 
-        let wavesCleaned: {
+        const wavesCleaned: {
           waver: String;
           timestamp: ethers.BigNumber;
           message: String;
-        }[] = [];
-
-        waves.forEach((wave) => {
-          wavesCleaned.push({
+        }[] = waves.map((wave) => {
+          return {
             waver: wave.waver,
             timestamp: wave.timestamp,
             message: wave.message,
-          });
+          };
         });
 
         setAllWaves(wavesCleaned);
@@ -100,6 +99,37 @@ const Home = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    let wavePortalContract: WavePortal;
+
+    const onNewWave = (
+      from: String,
+      timestamp: ethers.BigNumber,
+      message: String
+    ) => {
+      console.log("new wave", from, timestamp, message);
+      setAllWaves((prev) => [...prev, { waver: from, timestamp, message }]);
+    };
+
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      wavePortalContract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer
+      ) as WavePortal;
+      wavePortalContract.on("NewWave", onNewWave);
+    }
+
+    return () => {
+      if (wavePortalContract) {
+        wavePortalContract.off("NewWave", onNewWave);
+      }
+    };
+  }, []);
 
   const connectWallet = async () => {
     try {

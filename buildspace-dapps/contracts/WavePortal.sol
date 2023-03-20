@@ -30,8 +30,8 @@ contract WavePortal {
     // publicで公開されたAPIエンドポイントになるイメージ
     function wave(string memory _message) public {
         require(
-            lastWavedAt[msg.sender] + 15 minutes < block.timestamp,
-            "wait 15m"
+            lastWavedAt[msg.sender] + 30 seconds < block.timestamp,
+            "wait 30s"
         );
 
         lastWavedAt[msg.sender] = block.timestamp;
