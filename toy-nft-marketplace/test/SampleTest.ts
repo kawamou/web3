@@ -39,6 +39,7 @@ describe("NFTMarketplace", function () {
     /* query for and return the unsold items */
     var items = await nftMarketplace.fetchMarketItems();
     items = await Promise.all(
+      // @ts-ignore
       items.map(async (i) => {
         const tokenUri = await nftMarketplace.tokenURI(i.tokenId);
         let item = {
