@@ -1,4 +1,5 @@
-/* test/sample-test.js */
+import { ethers } from "hardhat";
+
 describe("NFTMarketplace", function () {
   it("Should create and execute market sales", async function () {
     /* deploy the marketplace */
@@ -36,7 +37,7 @@ describe("NFTMarketplace", function () {
       .resellToken(1, auctionPrice, { value: listingPrice });
 
     /* query for and return the unsold items */
-    items = await nftMarketplace.fetchMarketItems();
+    var items = await nftMarketplace.fetchMarketItems();
     items = await Promise.all(
       items.map(async (i) => {
         const tokenUri = await nftMarketplace.tokenURI(i.tokenId);
