@@ -1,7 +1,8 @@
-/** @type import('hardhat/config').HardhatUserConfig */
-require("@nomiclabs/hardhat-waffle");
+import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
+// import "@nomiclabs/hardhat-waffle";
 
-module.exports = {
+const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   networks: {
     hardhat: {
@@ -18,3 +19,5 @@ module.exports = {
     },
   },
 };
+
+export default config;
