@@ -1,18 +1,22 @@
 "use client";
 import { Web3Auth } from "@web3auth/modal";
 import { ethers } from "ethers";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NFTMarketplace } from "@/../../typechain-types";
 import Image from "next/image";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useNfts } from "@/hooks/useNfts";
 import Header from "@/components/header";
+import { AuthContext } from "@/context/authContext";
 
 export default function Home() {
   const [nfts, buyNft, ,] = useNfts();
+  const { auth } = useContext(AuthContext);
   const [initAuth, isLogin, login, logout, getSigner, getAddress, getBalance] =
-    useAuth();
+    auth!;
+
+  console.log(getAddress());
 
   return (
     <>

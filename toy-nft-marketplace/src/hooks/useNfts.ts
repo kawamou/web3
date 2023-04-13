@@ -1,3 +1,4 @@
+"use client";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -9,7 +10,7 @@ import { Nft } from "@/types/nft";
 
 const marketplaceAddress = process.env.NEXT_PUBLIC_MARKET_PLACCE_ADDRESS ?? "";
 
-export const useNfts = (): [
+type UseNftsReturnType = [
   Nft[],
   (nft: Nft, signer: ethers.providers.JsonRpcSigner) => Promise<void>,
   (
@@ -18,7 +19,9 @@ export const useNfts = (): [
     signer: ethers.providers.JsonRpcSigner
   ) => Promise<void>,
   (id: string) => Nft | undefined
-] => {
+];
+
+export const useNfts = (): UseNftsReturnType => {
   const [nfts, setNfts] = useState<Nft[]>([]);
 
   useEffect(() => {
