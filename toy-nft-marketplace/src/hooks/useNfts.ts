@@ -31,7 +31,9 @@ export const useNfts = (): UseNftsReturnType => {
   }, []);
 
   const loadNFTs = async () => {
-    const provider = new ethers.providers.JsonRpcProvider();
+    const provider = new ethers.providers.JsonRpcProvider(
+      "http://localhost:8545"
+    );
     const contract = new ethers.Contract(
       marketplaceAddress,
       abi.abi,
