@@ -17,8 +17,8 @@ const Header = () => {
         <Link href="/dashboard" className="mr-6 text-pink-500">
           Dashboard
         </Link>
-        <Link href="/signin" className="mr-6 text-pink-500">
-          Signin
+        <Link href="/auth" className="mr-6 text-pink-500">
+          Login / Logout
         </Link>
       </div>
     </nav>
