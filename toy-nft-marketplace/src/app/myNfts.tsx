@@ -1,5 +1,6 @@
+"use client";
 import { ethers } from "ethers";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
 const marketplaceAddress = process.env.NEXT_PUBLIC_MARKET_PLACCE_ADDRESS ?? "";
@@ -10,10 +11,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Nft } from "@/types/nft";
 import Image from "next/image";
 import { list } from "postcss";
+import { AuthContext } from "@/context/authContext";
 
 export const MyNfts = () => {
   const [nfts, ,] = useNfts();
-  const [, , , getAddress] = useAuth();
+  const { auth } = useContext(AuthContext);
+  const [initAuth, isLogin, login, logout, getSigner, getAddress, getBalance] =
+    auth!;
   const router = useRouter();
   const address = getAddress() ?? "";
 

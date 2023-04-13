@@ -1,10 +1,12 @@
+"use client";
+import { AuthContext } from "@/context/authContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useNfts } from "@/hooks/useNfts";
 import { Nft } from "@/types/nft";
 import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 type FormInput = {
   price: number;
@@ -19,8 +21,9 @@ const getQueryStringValue = (value: string | string[] | undefined) => {
 export const ResellNft = () => {
   const [nft, setNft] = useState<Nft>();
   const [nfts, , listNft, getNftById] = useNfts();
+  const { auth } = useContext(AuthContext);
   const [initAuth, isLogin, login, logout, getSigner, getAddress, getBalance] =
-    useAuth();
+    auth!;
   const [formInput, setFormInput] = useState<FormInput>({
     price: 0,
     image: "",

@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+"use client";
+import React, { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { useNfts } from "@/hooks/useNfts";
+import { AuthContext } from "@/context/authContext";
 
 type FormInput = {
   price: number;
@@ -26,7 +28,9 @@ const CreateNft = () => {
     description: "",
   });
   const [, , listNft] = useNfts();
-  const [login, logout, getSigner, getAddress, getBalance] = useAuth();
+  const { auth } = useContext(AuthContext);
+  const [initAuth, isLogin, login, logout, getSigner, getAddress, getBalance] =
+    auth!;
   const router = useRouter();
 
   const handleOnChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
