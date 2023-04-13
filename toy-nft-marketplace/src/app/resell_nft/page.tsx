@@ -18,7 +18,7 @@ const getQueryStringValue = (value: string | string[] | undefined) => {
   return value ?? "";
 };
 
-export const ResellNft = () => {
+const ResellNft = () => {
   const [nft, setNft] = useState<Nft>();
   const [nfts, , listNft, getNftById] = useNfts();
   const { auth } = useContext(AuthContext);
@@ -71,3 +71,5 @@ export const ResellNft = () => {
     </div>
   );
 };
+
+export default ResellNft;

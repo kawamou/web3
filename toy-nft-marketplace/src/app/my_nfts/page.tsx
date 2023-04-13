@@ -13,7 +13,7 @@ import Image from "next/image";
 import { list } from "postcss";
 import { AuthContext } from "@/context/authContext";
 
-export const MyNfts = () => {
+const MyNfts = () => {
   const [nfts, ,] = useNfts();
   const { auth } = useContext(AuthContext);
   const [initAuth, isLogin, login, logout, getSigner, getAddress, getBalance] =
@@ -54,3 +54,5 @@ export const MyNfts = () => {
     </div>
   );
 };
+
+export default MyNfts;

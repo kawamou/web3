@@ -2,11 +2,12 @@
 import React, { useContext, useState } from "react";
 import { ethers } from "ethers";
 import { create as ipfsHttpClient } from "ipfs-http-client";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/hooks/useAuth";
 import { useNfts } from "@/hooks/useNfts";
 import { AuthContext } from "@/context/authContext";
+import { NftsContext } from "@/context/nftsContext";
 
 type FormInput = {
   price: number;
@@ -14,9 +15,9 @@ type FormInput = {
   description: string;
 };
 
-const client = ipfsHttpClient({
-  url: "https://ipfs.infura.io:5001/api/v0",
-});
+// const client = ipfsHttpClient({
+//   url: "https://ipfs.infura.io:5001/api/v0",
+// });
 
 const marketplaceAddress = process.env.NEXT_PUBLIC_MARKET_PLACCE_ADDRESS ?? "";
 
@@ -27,7 +28,8 @@ const CreateNft = () => {
     name: "",
     description: "",
   });
-  const [, , listNft] = useNfts();
+  const { nfts } = useContext(NftsContext);
+  const [_nfts, buyNft, listNft, getNftById] = nfts!;
   const { auth } = useContext(AuthContext);
   const [initAuth, isLogin, login, logout, getSigner, getAddress, getBalance] =
     auth!;
@@ -37,32 +39,34 @@ const CreateNft = () => {
     if (!e.target.files) return;
     const file = e.target.files[0];
     try {
-      const added = await client.add(file, {
-        progress: (prog) => console.log(`received: ${prog}`),
-      });
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      // const added = await client.add(file, {
+      //   progress: (prog) => console.log(`received: ${prog}`),
+      // });
+      // const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      const url = "/yellow.png";
       setFileUrl(url);
     } catch (error) {
       console.log("failed to upload file: ", error);
     }
   };
 
-  const uploadToIpfs = async () => {
-    const { name, description, price } = formInput;
-    if (!name || !description || !price || !fileUrl) return;
-    const data = JSON.stringify({ name, description, image: fileUrl });
+  // const uploadToIpfs = async () => {
+  //   const { name, description, price } = formInput;
+  //   if (!name || !description || !price || !fileUrl) return;
+  //   const data = JSON.stringify({ name, description, image: fileUrl });
 
-    try {
-      const added = await client.add(data);
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-      return url;
-    } catch (error) {
-      console.log("failed to upload file: ", error);
-    }
-  };
+  //   try {
+  //     const added = await client.add(data);
+  //     const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+  //     return url;
+  //   } catch (error) {
+  //     console.log("failed to upload file: ", error);
+  //   }
+  // };
 
   const listNftForSale = async () => {
-    const url = await uploadToIpfs();
+    // const url = await uploadToIpfs();
+    const url = "/yellow.png";
     if (!url) return;
     const signer = getSigner();
     if (!signer) return;
@@ -94,10 +98,21 @@ const CreateNft = () => {
           onChange={handleOnChange}
         />
         {fileUrl && (
-          <Image className="rounded mt-4" width="350" src={fileUrl} alt="" />
+          <Image
+            className="rounded mt-4"
+            width="350"
+            height="350"
+            src={fileUrl}
+            alt=""
+          />
         )}
         <button
-          onClick={listNftForSale}
+          onClick={() => {
+            (async () => {
+              console.log("list nft for sale");
+              await listNftForSale();
+            })();
+          }}
           className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg"
         ></button>
       </div>
