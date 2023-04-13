@@ -1,4 +1,3 @@
-"use client";
 import { Web3Auth } from "@web3auth/modal";
 import type { SafeEventEmitterProvider } from "@web3auth/base";
 import { useEffect, useState } from "react";
