@@ -53,10 +53,6 @@ export const useAuth = (): UseAuthReturnType => {
   const isLogin = async () => {
     try {
       const userInfo = await web3Auth?.getUserInfo();
-      console.log("=========");
-      console.log(web3Auth);
-      console.log(userInfo);
-      console.log("=========");
       return userInfo?.email ? true : false;
     } catch (error) {
       return false;
