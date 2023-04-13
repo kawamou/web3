@@ -8,10 +8,10 @@ const Header = () => {
         <Link href="/" className="mr-4 text-pink-500">
           Home
         </Link>
-        <Link href="/create-nft" className="mr-6 text-pink-500">
+        <Link href="/create_nft" className="mr-6 text-pink-500">
           Sell NFT
         </Link>
-        <Link href="/my-nfts" className="mr-6 text-pink-500">
+        <Link href="/my_nfts" className="mr-6 text-pink-500">
           My NFTs
         </Link>
         <Link href="/dashboard" className="mr-6 text-pink-500">
