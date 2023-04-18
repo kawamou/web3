@@ -12,9 +12,9 @@ export const GET = async (
     return new Response("ok", {
       status: 200,
       headers: {
-        "x-amz-meta-name": response.headers["x-amz-meta-name"],
-        "x-amz-meta-tokenUri": response.headers["x-amz-meta-tokenUri"],
-        "x-amz-meta-description": response.headers["x-amz-meta-description"],
+        name: response.headers["x-amz-meta-name"],
+        tokenUri: response.headers["x-amz-meta-tokenUri"],
+        description: response.headers["x-amz-meta-description"],
       },
     });
   } catch (error) {
