@@ -25,7 +25,7 @@ export const useAuth = (): UseAuthReturnType => {
       chainConfig: {
         chainNamespace: "eip155",
         chainId: "0x13881",
-        rpcTarget: "https://rpc.ankr.com/polygon_mumbai",
+        rpcTarget: "http://localhost:8545",
       },
     })
   );
