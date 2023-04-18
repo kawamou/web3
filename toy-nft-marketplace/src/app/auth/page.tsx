@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 
-const Signin = () => {
+const Auth = () => {
   const { auth } = useContext(AuthContext);
   const [initAuth, isLogin, login, logout, getSigner, getAddress, getBalance] =
     auth!;
@@ -18,7 +18,6 @@ const Signin = () => {
           const isLoggedIn = await isLogin();
           console.log(isLoggedIn);
           if (!isLoggedIn) {
-            console.log("login");
             const web3auth = await initAuth();
             const provider = await web3auth?.connect();
             if (!provider) return;
@@ -32,7 +31,6 @@ const Signin = () => {
       <button
         className="bg-pink-500 text-white rounded px-4 py-2 shadow-lg"
         onClick={async () => {
-          console.log("logout");
           await logout();
           router.push("/");
         }}
@@ -43,4 +41,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Auth;
