@@ -1,13 +1,10 @@
 "use client";
 import React, { useContext, useState } from "react";
-import { ethers } from "ethers";
-import { create as ipfsHttpClient } from "ipfs-http-client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useAuth } from "@/hooks/useAuth";
-import { useNfts } from "@/hooks/useNfts";
 import { AuthContext } from "@/context/authContext";
 import { NftsContext } from "@/context/nftsContext";
+import { useAssetFile } from "@/hooks/useAssetFile";
 
 type FormInput = {
   price: number;
@@ -15,58 +12,38 @@ type FormInput = {
   description: string;
 };
 
-// const client = ipfsHttpClient({
-//   url: "https://ipfs.infura.io:5001/api/v0",
-// });
-
-const marketplaceAddress = process.env.NEXT_PUBLIC_MARKET_PLACCE_ADDRESS ?? "";
-
 const CreateNft = () => {
-  const [fileUrl, setFileUrl] = useState("");
   const [formInput, setFormInput] = useState<FormInput>({
     price: 0,
     name: "",
     description: "",
   });
+  const [assetFile, updateAssetFile, uploadAssetFile] = useAssetFile();
   const { nfts } = useContext(NftsContext);
-  const [_nfts, buyNft, listNft, getNftById] = nfts!;
+  const [_nfts, , listNft] = nfts!;
   const { auth } = useContext(AuthContext);
-  const [initAuth, isLogin, login, logout, getSigner, getAddress, getBalance] =
-    auth!;
+  const [, , , , getSigner, ,] = auth!;
   const router = useRouter();
 
   const handleOnChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const file = e.target.files[0];
+    updateAssetFile(file);
+  };
+
+  const uploadToIpfs = async () => {
+    const { name, description, price } = formInput;
+    if (!name || !description || !price) return;
     try {
-      // const added = await client.add(file, {
-      //   progress: (prog) => console.log(`received: ${prog}`),
-      // });
-      // const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-      const url = "/yellow.png";
-      setFileUrl(url);
+      const url = await uploadAssetFile(name, description);
+      return url;
     } catch (error) {
       console.log("failed to upload file: ", error);
     }
   };
 
-  // const uploadToIpfs = async () => {
-  //   const { name, description, price } = formInput;
-  //   if (!name || !description || !price || !fileUrl) return;
-  //   const data = JSON.stringify({ name, description, image: fileUrl });
-
-  //   try {
-  //     const added = await client.add(data);
-  //     const url = `https://ipfs.infura.io/ipfs/${added.path}`;
-  //     return url;
-  //   } catch (error) {
-  //     console.log("failed to upload file: ", error);
-  //   }
-  // };
-
   const listNftForSale = async () => {
-    // const url = await uploadToIpfs();
-    const url = "/yellow.png";
+    const url = await uploadToIpfs();
     if (!url) return;
     const signer = getSigner();
     if (!signer) return;
@@ -79,42 +56,52 @@ const CreateNft = () => {
       <div className="w-1/2 flex flex-col pb-12">
         <input
           placeholder="asset name"
-          className="mt-8 border rounded p-4"
+          className="mt-8 rounded p-4 text-gray-900"
           onChange={(e) => {
             setFormInput({ ...formInput, name: e.target.value });
           }}
         />
         <textarea
           placeholder="asset descriprtion"
-          className="nt-2 border rounded p-4"
+          className="mt-2 rounded p-4 text-gray-900 resize-none"
           onChange={(e) => {
             setFormInput({ ...formInput, description: e.target.value });
           }}
         />
         <input
+          placeholder="asset price in eth"
+          className="mt-2 rounded p-4 text-gray-900"
+          onChange={(e) => {
+            setFormInput({ ...formInput, price: parseFloat(e.target.value) });
+          }}
+        />
+        <input
+          id="file"
           type="file"
           name="asset"
           className="my-4"
+          placeholder=""
           onChange={handleOnChange}
         />
-        {fileUrl && (
+        {assetFile?.onMemoryUrl && (
           <Image
             className="rounded mt-4"
-            width="350"
-            height="350"
-            src={fileUrl}
+            width="150"
+            height="150"
+            src={assetFile?.onMemoryUrl}
             alt=""
           />
         )}
         <button
           onClick={() => {
             (async () => {
-              console.log("list nft for sale");
               await listNftForSale();
             })();
           }}
           className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg"
-        ></button>
+        >
+          Create NFT
+        </button>
       </div>
     </div>
   );
