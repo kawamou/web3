@@ -6,6 +6,8 @@ import { NFTMarketplace } from "@/../../typechain-types";
 import abi from "@/../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 
 import { Nft } from "@/types/nft";
+import assetRepository from "./assetRepository";
+import path from "path";
 
 const marketplaceAddress = process.env.NEXT_PUBLIC_MARKET_PLACCE_ADDRESS ?? "";
 
@@ -26,7 +28,18 @@ export const useNfts = (): UseNftsReturnType => {
   useEffect(() => {
     (async () => {
       const prev = await loadNFTs();
-      setNfts(prev);
+      const repo = assetRepository();
+      const newNfts = await Promise.all(
+        prev.map(async (nft) => {
+          const id = path.basename(nft.tokenUri);
+          const asset = await repo.get(id);
+          nft.name = asset.name;
+          nft.description = asset.description;
+          console.log(nft);
+          return nft;
+        })
+      );
+      setNfts(newNfts);
     })();
   }, []);
 
@@ -44,7 +57,7 @@ export const useNfts = (): UseNftsReturnType => {
         const tokenUri = await contract.tokenURI(i.tokenId);
         const name = await contract.name();
         const meta = await axios.get(tokenUri);
-        let price = ethers.utils.formatUnits(i.price.toString(), "ether");
+        let price = ethers.utils.formatUnits(i.price.toString(), "wei");
         return {
           price,
           tokenId: i.tokenId.toString(),
@@ -71,8 +84,6 @@ export const useNfts = (): UseNftsReturnType => {
     price: number,
     signer: ethers.providers.JsonRpcSigner
   ) => {
-    const priceString = ethers.utils.parseUnits(price.toString(), "ether");
-
     const contract = new ethers.Contract(
       marketplaceAddress,
       abi.abi,
