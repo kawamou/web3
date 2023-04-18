@@ -67,7 +67,7 @@ export const useNfts = (): UseNftsReturnType => {
   };
 
   const listNft = async (
-    ipfsUrl: string,
+    assetUrl: string,
     price: number,
     signer: ethers.providers.JsonRpcSigner
   ) => {
@@ -84,7 +84,7 @@ export const useNfts = (): UseNftsReturnType => {
 
     console.log(signer);
     console.log("listing price", listingPrice.toString());
-    const tx = await contract.createToken(ipfsUrl, price, {
+    const tx = await contract.createToken(assetUrl, price, {
       value: listingPriceString,
     });
   };
