@@ -25,12 +25,13 @@ export default function Home() {
         <div className="px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
             {nfts.map((nft, i) => {
+              console.log(nft.image);
               return (
                 <div
                   key={i}
                   className="border shadow rounded-xl overflow-hidden"
                 >
-                  <Image src={nft.image} alt="" />
+                  <Image src={nft.image} width="150" height="150" alt="" />
                   <div className="p-4">
                     <p className="text-2xl font-semibold">{nft.name}</p>
                     <div className="overflow-hidden">
