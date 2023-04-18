@@ -1,11 +1,5 @@
 import axios from "axios";
 
-type createAssetRequest = {
-  name: string;
-  description: string;
-  file: File;
-};
-
 const localBaseURL = "http://localhost:3000/api";
 
 const repo = axios.create({
@@ -14,8 +8,15 @@ const repo = axios.create({
 
 const assetRepository = () => {
   return {
-    get: (id: string) => repo.get(`assets/${id}`),
-    create: async (data: createAssetRequest) => {
+    get: async (id: string) => {
+      const res = await repo.get(`assets/${id}`);
+      return {
+        name: res.headers.name as string,
+        description: res.headers.description as string,
+        file: res.data as File,
+      };
+    },
+    create: async (data: { name: string; description: string; file: File }) => {
       const { name, description, file } = data;
       const formData = new FormData();
       formData.append("file", file);
