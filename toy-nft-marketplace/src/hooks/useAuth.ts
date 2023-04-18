@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 
 export type UseAuthReturnType = [
   () => Promise<Web3Auth | undefined>,
-  () => Promise<boolean>,
+  () => boolean,
   (provider: SafeEventEmitterProvider) => void,
   () => Promise<void>,
   () => ethers.providers.JsonRpcSigner | undefined,
@@ -49,13 +49,8 @@ export const useAuth = (): UseAuthReturnType => {
   };
 
   // メチャクチャ適当なログイン状態
-  const isLogin = async () => {
-    try {
-      const userInfo = await web3Auth?.getUserInfo();
-      return userInfo?.email ? true : false;
-    } catch (error) {
-      return false;
-    }
+  const isLogin = () => {
+    return getAddress() ? true : false;
   };
 
   const login = (provider: SafeEventEmitterProvider) => {
@@ -84,7 +79,22 @@ export const useAuth = (): UseAuthReturnType => {
   };
 
   const logout = async () => {
-    await web3Auth?.logout();
+    try {
+      setWeb3Auth(
+        new Web3Auth({
+          clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID ?? "",
+          chainConfig: {
+            chainNamespace: "eip155",
+            chainId: "0x13881",
+            rpcTarget: "http://localhost:8545",
+          },
+        })
+      );
+      setProvider(null);
+      await web3Auth?.logout();
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return [initAuth, isLogin, login, logout, getSigner, getAddress, getBalance];
