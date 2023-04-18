@@ -31,9 +31,7 @@ export const useNfts = (): UseNftsReturnType => {
   }, []);
 
   const loadNFTs = async () => {
-    const provider = new ethers.providers.JsonRpcProvider(
-      "http://localhost:8545"
-    );
+    const provider = new ethers.providers.JsonRpcProvider();
     const contract = new ethers.Contract(
       marketplaceAddress,
       abi.abi,
@@ -44,6 +42,7 @@ export const useNfts = (): UseNftsReturnType => {
     const items: Nft[] = await Promise.all(
       data.map(async (i) => {
         const tokenUri = await contract.tokenURI(i.tokenId);
+        const name = await contract.name();
         const meta = await axios.get(tokenUri);
         let price = ethers.utils.formatUnits(i.price.toString(), "ether");
         return {
@@ -51,8 +50,9 @@ export const useNfts = (): UseNftsReturnType => {
           tokenId: i.tokenId.toString(),
           seller: i.seller,
           owner: i.owner,
-          image: meta.data.image,
-          name: meta.data.name,
+          // image: meta.data.image,
+          image: tokenUri,
+          name: name,
           description: meta.data.description,
           tokenUri: tokenUri,
         };
@@ -82,6 +82,8 @@ export const useNfts = (): UseNftsReturnType => {
     const listingPrice = await contract.getListingPrice();
     const listingPriceString = listingPrice.toString();
 
+    console.log(signer);
+    console.log("listing price", listingPrice.toString());
     const tx = await contract.createToken(ipfsUrl, price, {
       value: listingPriceString,
     });
