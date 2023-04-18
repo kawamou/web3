@@ -8,7 +8,7 @@ const Auth = ({ children }: { children: React.ReactNode }) => {
   (async () => {
     const islogin = await isLogin();
     if (!islogin) {
-      router.push("/signin");
+      router.push("/auth");
     }
   })();
 
