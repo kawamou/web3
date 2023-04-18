@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# toy-nft-marketplace
 
-## Getting Started
+- 操作は全てスマコンで行う（ほぼ）フルオンチェーンのNFTマーケットプレイス
+  - ローカルでのみ動作
+- AssetのみMinioに永続化
+- ログイン / ログアウト機能：ログイン・ログアウトを実施
+- Sell NFT：NFTをマケプレ上に出品
+- それ以外の機能は未実装
 
-First, run the development server:
+## 実行方法
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+- 事前にWeb3Authでアカウント作っておく
+  - `.env.local`内で`NEXT_PUBLIC_WEB3AUTH_CLIENT_ID`を設定する
+- マケプレを立ち上げる
+
+```sh
+npx hardhat node
+npx hardhat run scripts/deploy.ts --network localhost
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `.env.local`内で出力されたマケプレの`Contract Address`を設定する
+  - `NEXT_PUBLIC_MARKET_PLACCE_ADDRESS`
+- 生成された`npx hardhat node`で生成されたアカウントをMetamaskに追加する
+  - アカウントをインポート
+- ※再実行しても変化はないので`npx hardhat node`するたびにやり直す必要はなさそう
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Assetを永続化するためのMinio（パブリック）とNext.jsを立ち上げる
 
-[http://localhost:3000/api/hello](http://localhost:3000/api/hello) is an endpoint that uses [Route Handlers](https://beta.nextjs.org/docs/routing/route-handlers). This endpoint can be edited in `app/api/hello/route.ts`.
+```sh
+docker compose up
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+npm run dev
+```
 
-## Learn More
+- アプリ内のWeb3Authでは必ずMetamaskを設定する
+  - ローカルを利用する場合はSNSログインしてしまうとSaaS上にウォレットが作成されてしまうため
 
-To learn more about Next.js, take a look at the following resources:
+## 参考
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [How to Build a Full Stack NFT Marketplace - V2 (2022)](https://dev.to/edge-and-node/building-scalable-full-stack-apps-on-ethereum-with-polygon-2cfb)
+  - ほぼこちらに準拠。ただしTypeScript対応やWeb3Auth対応等の変更点がある
